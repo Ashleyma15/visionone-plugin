@@ -1,0 +1,111 @@
+openapi: 3.0.1
+info:
+  title: Trend Micro Vision One API
+  description: Access incidents and threat intelligence from Trend Micro Vision One
+  version: 1.0.0
+
+servers:
+  - url: https://api.xdr.trendmicro.com
+
+paths:
+  /v3.0/incidents:
+    get:
+      summary: Get list of incidents
+      description: Retrieve a list of security incidents from Vision One
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          description: Start date for filtering incidents (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          description: End date for filtering incidents (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: status
+          in: query
+          required: false
+          description: Filter incidents by status (e.g., open, closed)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response with incident data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  incidents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        severity:
+                          type: string
+                        status:
+                          type: string
+                        createdTime:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized - Invalid API key
+        '500':
+          description: Internal server error
+
+  /v3.0/threatintel/search:
+    post:
+      summary: Search threat intelligence
+      description: Query threat intelligence using indicators like IP, domain, or hash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                indicator:
+                  type: string
+                  description: IP, domain, URL, or file hash to search
+      responses:
+        '200':
+          description: Successful response with threat intelligence data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  indicator:
+                    type: string
+                  threatLevel:
+                    type: string
+                  categories:
+                    type: array
+                    items:
+                      type: string
+                  lastSeen:
+                    type: string
+                    format: date-time
+        '401':
+          description: Unauthorized - Invalid API key
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+security:
+  - ApiKeyAuth: []
