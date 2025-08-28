@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  title: Trend Micro Vision One Alerts API
+  description: Access alerts from Trend Micro Vision One
+  version: 1.0.0
+
+servers:
+  - url: https://api.xdr.trendmicro.com
+
+paths:
+  /v3.0/alerts:
+    get:
+      summary: Get alerts
+      description: Retrieve a list of alerts from Trend Micro Vision One
+      operationId: getAlerts
+      parameters:
+        - name: limit
+          in: query
+          description: Number of alerts to return
+          required: false
+          schema:
+            type: integer
+            default: 100
+        - name: offset
+          in: query
+          description: Offset for pagination
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: A list of alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        severity:
+                          type: string
+                        description:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized – Invalid API key
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+security:
+  - ApiKeyAuth: []
