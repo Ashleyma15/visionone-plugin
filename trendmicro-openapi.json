@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Trend Micro Vision One API",
+    "version": "1.0.0",
+    "description": "Access threat intelligence and incident alert data from Trend Micro Vision One."
+  },
+  "servers": [
+    {
+      "url": "https://api.xdr.trendmicro.com/v1.0"
+    }
+  ],
+  "paths": {
+    "/ti/indicators": {
+      "get": {
+        "summary": "Get Threat Intelligence Indicators",
+        "description": "Retrieve threat indicators from Trend Micro Vision One.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type of threat indicator (e.g., URL, IP, domain)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of results to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/xdr/incidents": {
+      "get": {
+        "summary": "Get Incident Alerts",
+        "description": "Retrieve incident alert details including severity, type, and timestamps.",
+        "parameters": [
+          {
+            "name": "severity",
+            "in": "query",
+            "description": "Filter by severity level",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start time for filtering alerts",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End time for filtering alerts",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
