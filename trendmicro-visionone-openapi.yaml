@@ -1,0 +1,71 @@
+openapi: 3.0.1
+info:
+  title: Trend Micro Vision One API
+  description: API for accessing incidents, alerts, and threat intelligence from Trend Micro Vision One.
+  version: "1.0.0"
+servers:
+  - url: https://api.xdr.trendmicro.com
+
+paths:
+  /v3.0/response/threatintel/query:
+    post:
+      summary: Query threat intelligence
+      operationId: getThreatIntel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                indicator:
+                  type: string
+                  description: IP, domain, URL, or file hash
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /v3.0/workbench/alerts:
+    get:
+      summary: Get alerts
+      operationId: getAlerts
+      parameters:
+        - in: query
+          name: severity
+          schema:
+            type: string
+            enum: [low, medium, high]
+      responses:
+        '200':
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /v3.0/workbench/incidents:
+    get:
+      summary: Get incidents
+      operationId: getIncidents
+      parameters:
+        - in: query
+          name: startDateTime
+          schema:
+            type: string
+          description: Start time in ISO 8601 format
+        - in: query
+          name: endDateTime
+          schema:
+            type: string
+          description: End time in ISO 8601 format
+      responses:
+        '200':
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                type: object
