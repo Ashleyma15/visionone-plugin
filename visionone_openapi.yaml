@@ -30,7 +30,7 @@ paths:
         - name: status
           in: query
           required: false
-          description: "Filter incidents by status (e.g., open, closed)"
+          description: Filter incidents by status
           schema:
             type: string
       responses:
