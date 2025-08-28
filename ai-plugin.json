@@ -1,0 +1,19 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Trend Micro Vision One",
+  "name_for_model": "trend_micro_vision_one",
+  "description_for_human": "Query threat intelligence and incident alerts from Trend Micro Vision One.",
+  "description_for_model": "Use this plugin to get threat intelligence and incident alert details from Trend Micro Vision One using its API.",
+  "auth": {
+    "type": "api_key",
+    "authorization_type": "Bearer",
+    "api_key_name": "Authorization"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://raw.githubusercontent.com/Ashleyma15/visionone-plugin/refs/heads/main/trendmicro-openapi.json"
+  },
+  "logo_url": "https://yourdomain.com/logo.png",
+  "contact_email": "security@yourdomain.com",
+  "legal_info_url": "https://www.trendmicro.com/en_us/about/legal.html"
+}
