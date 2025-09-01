@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Trend Vision One (Simplified for Copilot)",
-    "version": "1.0.0",
-    "description": "Simplified subset of Trend Micro Vision One API for Security Copilot. Request bodies use primitive fields only to improve orchestration and skill selection."
+    "version": "1.1.0",
+    "description": "Simplified subset of Trend Micro Vision One API for Microsoft Security Copilot. Request bodies are primitive-only to improve orchestration and skill selection."
   },
   "servers": [
     {
@@ -19,12 +19,14 @@
         "operationId": "CheckConnectivity",
         "summary": "Verify API connectivity and token validity",
         "responses": {
-          "200": {
-            "description": "Service reachable and token valid"
-          }
+          "200": { "description": "Service reachable and token valid" }
         }
       }
     },
+
+    /* ------------------------------
+       Workbench Alerts (existing)
+       ------------------------------ */
     "/v3.0/workbench/alerts": {
       "get": {
         "operationId": "ListAlerts",
@@ -36,26 +38,12 @@
             "description": "Filter expression (optional)",
             "schema": { "type": "string" }
           },
-          {
-            "name": "startDateTime",
-            "in": "query",
-            "schema": { "type": "string", "format": "date-time" }
-          },
-          {
-            "name": "endDateTime",
-            "in": "query",
-            "schema": { "type": "string", "format": "date-time" }
-          },
-          {
-            "name": "orderBy",
-            "in": "query",
-            "schema": { "type": "string" }
-          }
+          { "name": "startDateTime", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+          { "name": "endDateTime", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+          { "name": "orderBy", "in": "query", "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": {
-            "description": "Alerts returned"
-          }
+          "200": { "description": "Alerts returned", "content": { "application/json": { "schema": { "type": "object" } } } }
         }
       }
     },
@@ -67,7 +55,7 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Alert details returned" },
+          "200": { "description": "Alert details", "content": { "application/json": { "schema": { "type": "object" } } } },
           "404": { "description": "Alert not found" }
         }
       },
@@ -80,11 +68,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAlertStatusRequest"
-              }
-            }
+            "application/json": { "schema": { "$ref": "#/components/schemas/UpdateAlertStatusRequest" } }
           }
         },
         "responses": {
@@ -104,11 +88,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddNoteRequest"
-              }
-            }
+            "application/json": { "schema": { "$ref": "#/components/schemas/AddNoteRequest" } }
           }
         },
         "responses": {
@@ -118,12 +98,113 @@
         }
       }
     },
+
+    /* ------------------------------
+       Endpoint Security (added)
+       ------------------------------ */
+    "/v3.0/endpointSecurity/endpoints": {
+      "get": {
+        "operationId": "ListEndpoints",
+        "summary": "List endpoints with optional filter and select",
+        "parameters": [
+          {
+            "name": "TMV1-Filter",
+            "in": "header",
+            "description": "Filter expression (optional), e.g. osName eq 'Windows'",
+            "schema": { "type": "string" }
+          },
+          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
+          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } },
+          { "name": "select", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Endpoints returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/v3.0/endpointSecurity/endpoints/{id}": {
+      "get": {
+        "operationId": "GetEndpointById",
+        "summary": "Get endpoint details by ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Endpoint details", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "description": "Endpoint not found" }
+        }
+      }
+    },
+
+    /* ------------------------------
+       Threat Intelligence (added)
+       ------------------------------ */
+    "/v3.0/threatintel/suspiciousObjects": {
+      "get": {
+        "operationId": "ListSuspiciousObjects",
+        "summary": "List suspicious objects (domains, URLs, IPs, file hashes, sender emails)",
+        "parameters": [
+          {
+            "name": "TMV1-Filter",
+            "in": "header",
+            "description": "Filter expression (optional), e.g. type eq 'url' and riskLevel eq 'high'",
+            "schema": { "type": "string" }
+          },
+          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
+          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } }
+        ],
+        "responses": {
+          "200": { "description": "Suspicious objects returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/v3.0/threatintel/feeds": {
+      "get": {
+        "operationId": "ListThreatFeeds",
+        "summary": "List threat intelligence objects/indicators",
+        "parameters": [
+          {
+            "name": "TMV1-Contextual-Filter",
+            "in": "header",
+            "description": "Contextual filter (optional), for example, by type or confidence",
+            "schema": { "type": "string" }
+          },
+          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
+          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } }
+        ],
+        "responses": {
+          "200": { "description": "Feed items returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/v3.0/threatintel/feeds/filterDefinition": {
+      "get": {
+        "operationId": "GetThreatFeedFilterDefinition",
+        "summary": "Get supported filter keys/values for feeds",
+        "responses": {
+          "200": { "description": "Filter definition", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
     "/v3.0/threatintel/intelligenceReports": {
       "get": {
         "operationId": "ListIntelligenceReports",
         "summary": "List custom intelligence reports",
         "responses": {
-          "200": { "description": "Reports returned" }
+          "200": { "description": "Reports returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/v3.0/threatintel/intelligenceReports/{id}": {
+      "get": {
+        "operationId": "GetIntelligenceReport",
+        "summary": "Get a specific intelligence report by ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Report returned", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "description": "Report not found" }
         }
       }
     }
@@ -161,7 +242,8 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "bearerFormat": "JWT",
+        "description": "Supply your Trend Vision One API token as a Bearer token."
       }
     }
   }
