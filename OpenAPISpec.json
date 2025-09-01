@@ -23,10 +23,6 @@
         }
       }
     },
-
-    /* ------------------------------
-       Workbench Alerts (existing)
-       ------------------------------ */
     "/v3.0/workbench/alerts": {
       "get": {
         "operationId": "ListAlerts",
@@ -43,7 +39,10 @@
           { "name": "orderBy", "in": "query", "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Alerts returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+          "200": {
+            "description": "Alerts returned",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
         }
       }
     },
@@ -55,7 +54,10 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Alert details", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": {
+            "description": "Alert details",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
           "404": { "description": "Alert not found" }
         }
       },
@@ -98,10 +100,6 @@
         }
       }
     },
-
-    /* ------------------------------
-       Endpoint Security (added)
-       ------------------------------ */
     "/v3.0/endpointSecurity/endpoints": {
       "get": {
         "operationId": "ListEndpoints",
@@ -114,11 +112,18 @@
             "schema": { "type": "string" }
           },
           { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
-          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } },
+          {
+            "name": "top",
+            "in": "query",
+            "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 }
+          },
           { "name": "select", "in": "query", "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Endpoints returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+          "200": {
+            "description": "Endpoints returned",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
         }
       }
     },
@@ -130,15 +135,14 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Endpoint details", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": {
+            "description": "Endpoint details",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
           "404": { "description": "Endpoint not found" }
         }
       }
     },
-
-    /* ------------------------------
-       Threat Intelligence (added)
-       ------------------------------ */
     "/v3.0/threatintel/suspiciousObjects": {
       "get": {
         "operationId": "ListSuspiciousObjects",
@@ -151,10 +155,17 @@
             "schema": { "type": "string" }
           },
           { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
-          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } }
+          {
+            "name": "top",
+            "in": "query",
+            "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 }
+          }
         ],
         "responses": {
-          "200": { "description": "Suspicious objects returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+          "200": {
+            "description": "Suspicious objects returned",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
         }
       }
     },
@@ -170,10 +181,17 @@
             "schema": { "type": "string" }
           },
           { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
-          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } }
+          {
+            "name": "top",
+            "in": "query",
+            "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 }
+          }
         ],
         "responses": {
-          "200": { "description": "Feed items returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+          "200": {
+            "description": "Feed items returned",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
         }
       }
     },
@@ -182,7 +200,10 @@
         "operationId": "GetThreatFeedFilterDefinition",
         "summary": "Get supported filter keys/values for feeds",
         "responses": {
-          "200": { "description": "Filter definition", "content": { "application/json": { "schema": { "type": "object" } } } }
+          "200": {
+            "description": "Filter definition",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
         }
       }
     },
@@ -191,7 +212,10 @@
         "operationId": "ListIntelligenceReports",
         "summary": "List custom intelligence reports",
         "responses": {
-          "200": { "description": "Reports returned", "content": { "application/json": { "schema": { "type": "object" } } } }
+          "200": {
+            "description": "Reports returned",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
         }
       }
     },
@@ -203,7 +227,10 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Report returned", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": {
+            "description": "Report returned",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
           "404": { "description": "Report not found" }
         }
       }
