@@ -1,0 +1,168 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Trend Vision One (Simplified for Copilot)",
+    "version": "1.0.0",
+    "description": "Simplified subset of Trend Micro Vision One API for Security Copilot. Request bodies use primitive fields only to improve orchestration and skill selection."
+  },
+  "servers": [
+    {
+      "url": "https://api.xdr.trendmicro.com"
+    }
+  ],
+  "security": [
+    { "bearerAuth": [] }
+  ],
+  "paths": {
+    "/v3.0/healthcheck/connectivity": {
+      "get": {
+        "operationId": "CheckConnectivity",
+        "summary": "Verify API connectivity and token validity",
+        "responses": {
+          "200": {
+            "description": "Service reachable and token valid"
+          }
+        }
+      }
+    },
+    "/v3.0/workbench/alerts": {
+      "get": {
+        "operationId": "ListAlerts",
+        "summary": "List workbench alerts",
+        "parameters": [
+          {
+            "name": "TMV1-Filter",
+            "in": "header",
+            "description": "Filter expression (optional)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "startDateTime",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "endDateTime",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Alerts returned"
+          }
+        }
+      }
+    },
+    "/v3.0/workbench/alerts/{id}": {
+      "get": {
+        "operationId": "GetAlert",
+        "summary": "Get a specific alert",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Alert details returned" },
+          "404": { "description": "Alert not found" }
+        }
+      },
+      "patch": {
+        "operationId": "UpdateAlertStatus",
+        "summary": "Update alert status and investigation result",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAlertStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Updated" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Alert not found" }
+        }
+      }
+    },
+    "/v3.0/workbench/alerts/{alertId}/notes": {
+      "post": {
+        "operationId": "AddAlertNote",
+        "summary": "Add a note to an alert",
+        "parameters": [
+          { "name": "alertId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Note created" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Alert not found" }
+        }
+      }
+    },
+    "/v3.0/threatintel/intelligenceReports": {
+      "get": {
+        "operationId": "ListIntelligenceReports",
+        "summary": "List custom intelligence reports",
+        "responses": {
+          "200": { "description": "Reports returned" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateAlertStatusRequest": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "New status for the alert (for example: Open, InProgress, Resolved)"
+          },
+          "investigationResult": {
+            "type": "string",
+            "description": "Plain-text summary of investigation result"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddNoteRequest": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Note text"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
