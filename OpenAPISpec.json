@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://api.xdr.trendmicro.com"
+      "url": "https://api.eu.xdr.trendmicro.com"
     }
   ],
   "security": [
