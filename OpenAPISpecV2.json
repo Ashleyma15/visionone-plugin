@@ -6,7 +6,7 @@
     "description": "Simplified subset of Trend Micro Vision One API for Microsoft Security Copilot. Request bodies are primitive-only to improve orchestration and skill selection."
   },
   "servers": [
-    { "url": "https://api.xdr.trendmicro.com" }
+    { "url": "https://api.eu.xdr.trendmicro.com" }
   ],
   "security": [
     { "bearerAuth": [] }
