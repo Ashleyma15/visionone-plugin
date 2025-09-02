@@ -1,481 +1,855 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "title": "Trend Vision One (Simplified for Copilot)",
-    "version": "1.1.0",
-    "description": "Simplified subset of Trend Micro Vision One API for Microsoft Security Copilot. Request bodies are primitive-only to improve orchestration and skill selection."
-  },
-  "servers": [
-    { "url": "https://api.eu.xdr.trendmicro.com" }
-  ],
-  "security": [
-    { "bearerAuth": [] }
-  ],
-  "tags": [
-    { "name": "Health" },
-    { "name": "Workbench" },
-    { "name": "EndpointSecurity" },
-    { "name": "ThreatIntel" },
-    { "name": "ASRM" }
-  ],
-  "paths": {
-    "/v3.0/healthcheck/connectivity": {
-      "get": {
-        "tags": ["Health"],
-        "operationId": "CheckConnectivity",
-        "summary": "Verify API connectivity and token validity",
-        "responses": {
-          "200": { "description": "Service reachable and token valid" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/workbench/alerts": {
-      "get": {
-        "tags": ["Workbench"],
-        "operationId": "ListAlerts",
-        "summary": "List workbench alerts",
-        "parameters": [
-          {
-            "name": "TMV1-Filter",
-            "in": "header",
-            "description": "Filter expression (optional)",
-            "schema": { "type": "string" }
-          },
-          { "name": "startDateTime", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-          { "name": "endDateTime", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-          { "name": "orderBy", "in": "query", "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Alerts returned",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/workbench/alerts/{id}": {
-      "get": {
-        "tags": ["Workbench"],
-        "operationId": "GetAlert",
-        "summary": "Get a specific alert",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Alert details",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "404": { "description": "Alert not found" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      },
-      "patch": {
-        "tags": ["Workbench"],
-        "operationId": "UpdateAlertStatus",
-        "summary": "Update alert status and investigation result",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/UpdateAlertStatusRequest" } }
-          }
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Trend Vision One (Simplified for Copilot)",
+        "version": "1.1.0",
+        "description": "Simplified subset of Trend Micro Vision One API for Microsoft Security Copilot. Request bodies are primitive-only to improve orchestration and skill selection.",
+        "contact": {
+            "name": "Ashley Maduray"
         },
-        "responses": {
-          "204": { "description": "Updated" },
-          "400": { "description": "Bad request" },
-          "404": { "description": "Alert not found" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
+        "x-created-by": "Ashley Maduray",
+        "x-created-date": "2025-08-31"
     },
-    "/v3.0/workbench/alerts/{alertId}/notes": {
-      "post": {
-        "tags": ["Workbench"],
-        "operationId": "AddAlertNote",
-        "summary": "Add a note to an alert",
-        "parameters": [
-          { "name": "alertId", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/AddNoteRequest" } }
-          }
+    "servers": [
+        {
+            "url": "https://api.eu.xdr.trendmicro.com"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Health"
         },
-        "responses": {
-          "201": { "description": "Note created" },
-          "400": { "description": "Bad request" },
-          "404": { "description": "Alert not found" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+        {
+            "name": "Workbench"
+        },
+        {
+            "name": "EndpointSecurity"
+        },
+        {
+            "name": "ThreatIntel"
+        },
+        {
+            "name": "ASRM"
         }
-      }
-    },
-    "/v3.0/endpointSecurity/endpoints": {
-      "get": {
-        "tags": ["EndpointSecurity"],
-        "operationId": "ListEndpoints",
-        "summary": "List endpoints with optional filter and select",
-        "parameters": [
-          {
-            "name": "TMV1-Filter",
-            "in": "header",
-            "description": "Filter expression (optional), e.g. osName eq 'Windows'",
-            "schema": { "type": "string" }
-          },
-          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
-          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } },
-          { "name": "select", "in": "query", "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Endpoints returned",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/endpointSecurity/endpoints/{id}": {
-      "get": {
-        "tags": ["EndpointSecurity"],
-        "operationId": "GetEndpointById",
-        "summary": "Get endpoint details by ID",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Endpoint details",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "404": { "description": "Endpoint not found" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/threatintel/suspiciousObjects": {
-      "get": {
-        "tags": ["ThreatIntel"],
-        "operationId": "ListSuspiciousObjects",
-        "summary": "List suspicious objects (domains, URLs, IPs, file hashes, sender emails)",
-        "parameters": [
-          {
-            "name": "TMV1-Filter",
-            "in": "header",
-            "description": "Filter expression (optional), e.g. type eq 'url' and riskLevel eq 'high'",
-            "schema": { "type": "string" }
-          },
-          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
-          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Suspicious objects returned",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/threatintel/feeds": {
-      "get": {
-        "tags": ["ThreatIntel"],
-        "operationId": "ListThreatFeeds",
-        "summary": "List threat intelligence objects/indicators",
-        "parameters": [
-          {
-            "name": "TMV1-Contextual-Filter",
-            "in": "header",
-            "description": "Contextual filter (optional), for example, by type or confidence",
-            "schema": { "type": "string" }
-          },
-          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
-          { "name": "top", "in": "query", "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 1000 } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Feed items returned",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/threatintel/feeds/filterDefinition": {
-      "get": {
-        "tags": ["ThreatIntel"],
-        "operationId": "GetThreatFeedFilterDefinition",
-        "summary": "Get supported filter keys/values for feeds",
-        "responses": {
-          "200": {
-            "description": "Filter definition",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/threatintel/intelligenceReports": {
-      "get": {
-        "tags": ["ThreatIntel"],
-        "operationId": "ListIntelligenceReports",
-        "summary": "List custom intelligence reports",
-        "responses": {
-          "200": {
-            "description": "Reports returned",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/threatintel/intelligenceReports/{id}": {
-      "get": {
-        "tags": ["ThreatIntel"],
-        "operationId": "GetIntelligenceReport",
-        "summary": "Get a specific intelligence report by ID",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Report returned",
-            "content": { "application/json": { "schema": { "type": "object" } } }
-          },
-          "404": { "description": "Report not found" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/v3.0/asrm/highRiskDevices": {
-      "get": {
-        "tags": ["ASRM"],
-        "operationId": "ListHighRiskDevices",
-        "summary": "Get at‑risk devices (paginated)",
-        "description": "Displays information about at‑risk devices that match specified criteria in a paginated list.",
-        "parameters": [
-          {
-            "name": "TMV1-Filter",
-            "in": "header",
-            "description": "Filter for retrieving a subset of the at‑risk devices list. Supported fields include id, deviceName, ip, os, riskScore, lastLogonUser. Supported operators include eq, and, or, not, parentheses, gt, ge, le, lt.",
-            "schema": { "type": "string", "maxLength": 1024 },
-            "example": "deviceName eq 'SASE-PC1'"
-          },
-          {
-            "name": "orderBy",
-            "in": "query",
-            "description": "Sort field and order. Append 'asc' or 'desc'. Default: riskScore desc",
-            "schema": { "type": "string", "maxLength": 128 },
-            "example": "riskScore desc"
-          },
-          {
-            "name": "top",
-            "in": "query",
-            "description": "Number of records per page. Default 100.",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "enum": [10, 50, 100, 200, 1000],
-              "default": 100
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["items", "count", "totalCount"],
-                  "properties": {
-                    "items": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/DeviceRiskItem" }
+    ],
+    "paths": {
+        "/v3.0/healthcheck/connectivity": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "operationId": "CheckConnectivity",
+                "summary": "Verify API connectivity and token validity",
+                "responses": {
+                    "200": {
+                        "description": "Service reachable and token valid"
                     },
-                    "count": { "type": "integer", "description": "Number of items in this page" },
-                    "totalCount": { "type": "integer", "description": "Total number of items across all pages" },
-                    "nextLink": {
-                      "type": "string",
-                      "description": "URL to retrieve the next page of results",
-                      "example": "https://api.xdr.trendmicro.com/v3.0/asrm/highRiskDevices?skipToken=skipToken"
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
                     }
-                  }
                 }
-              }
             }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
-                "example": {
-                  "error": {
-                    "code": "BadRequest",
-                    "message": "Unable to retrieve at‑risk device information. Verify that the request is properly formatted and try again.",
-                    "innererror": { "code": "RiskDevices_000400", "message": "TraceId: 00000000-0000-0000-0000-000000000000" }
-                  }
+        },
+        "/v3.0/workbench/alerts": {
+            "get": {
+                "tags": [
+                    "Workbench"
+                ],
+                "operationId": "ListAlerts",
+                "summary": "List workbench alerts",
+                "parameters": [
+                    {
+                        "name": "TMV1-Filter",
+                        "in": "header",
+                        "description": "Filter expression (optional)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "startDateTime",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "endDateTime",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Alerts returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
                 }
-              }
             }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": {
-            "description": "Access denied",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
-                "example": {
-                  "error": {
-                    "code": "AccessDenied",
-                    "message": "Access denied.",
-                    "innererror": { "code": "AccessDeny_000403", "message": "TraceId: 00000000-0000-0000-0000-000000000000" }
-                  }
+        },
+        "/v3.0/workbench/alerts/{id}": {
+            "get": {
+                "tags": [
+                    "Workbench"
+                ],
+                "operationId": "GetAlert",
+                "summary": "Get a specific alert",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Alert details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Alert not found"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
                 }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
-                "example": {
-                  "error": {
-                    "code": "InternalServerError",
-                    "message": "Unable to retrieve at‑risk device information. An internal error has occurred.",
-                    "innererror": { "code": "RiskDevices_000500", "message": "TraceId: 00000000-0000-0000-0000-000000000000" }
-                  }
+            },
+            "patch": {
+                "tags": [
+                    "Workbench"
+                ],
+                "operationId": "UpdateAlertStatus",
+                "summary": "Update alert status and investigation result",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAlertStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Updated"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Alert not found"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
                 }
-              }
             }
-          }
+        },
+        "/v3.0/workbench/alerts/{alertId}/notes": {
+            "post": {
+                "tags": [
+                    "Workbench"
+                ],
+                "operationId": "AddAlertNote",
+                "summary": "Add a note to an alert",
+                "parameters": [
+                    {
+                        "name": "alertId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note created"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Alert not found"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/endpointSecurity/endpoints": {
+            "get": {
+                "tags": [
+                    "EndpointSecurity"
+                ],
+                "operationId": "ListEndpoints",
+                "summary": "List endpoints with optional filter and select",
+                "parameters": [
+                    {
+                        "name": "TMV1-Filter",
+                        "in": "header",
+                        "description": "Filter expression (optional), e.g. osName eq 'Windows'",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "top",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1,
+                            "maximum": 1000
+                        }
+                    },
+                    {
+                        "name": "select",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Endpoints returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/endpointSecurity/endpoints/{id}": {
+            "get": {
+                "tags": [
+                    "EndpointSecurity"
+                ],
+                "operationId": "GetEndpointById",
+                "summary": "Get endpoint details by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Endpoint details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Endpoint not found"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/threatintel/suspiciousObjects": {
+            "get": {
+                "tags": [
+                    "ThreatIntel"
+                ],
+                "operationId": "ListSuspiciousObjects",
+                "summary": "List suspicious objects (domains, URLs, IPs, file hashes, sender emails)",
+                "parameters": [
+                    {
+                        "name": "TMV1-Filter",
+                        "in": "header",
+                        "description": "Filter expression (optional), e.g. type eq 'url' and riskLevel eq 'high'",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "top",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1,
+                            "maximum": 1000
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Suspicious objects returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/threatintel/feeds": {
+            "get": {
+                "tags": [
+                    "ThreatIntel"
+                ],
+                "operationId": "ListThreatFeeds",
+                "summary": "List threat intelligence objects/indicators",
+                "parameters": [
+                    {
+                        "name": "TMV1-Contextual-Filter",
+                        "in": "header",
+                        "description": "Contextual filter (optional), for example, by type or confidence",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "top",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1,
+                            "maximum": 1000
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Feed items returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/threatintel/feeds/filterDefinition": {
+            "get": {
+                "tags": [
+                    "ThreatIntel"
+                ],
+                "operationId": "GetThreatFeedFilterDefinition",
+                "summary": "Get supported filter keys/values for feeds",
+                "responses": {
+                    "200": {
+                        "description": "Filter definition",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/threatintel/intelligenceReports": {
+            "get": {
+                "tags": [
+                    "ThreatIntel"
+                ],
+                "operationId": "ListIntelligenceReports",
+                "summary": "List custom intelligence reports",
+                "responses": {
+                    "200": {
+                        "description": "Reports returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/threatintel/intelligenceReports/{id}": {
+            "get": {
+                "tags": [
+                    "ThreatIntel"
+                ],
+                "operationId": "GetIntelligenceReport",
+                "summary": "Get a specific intelligence report by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                }
+            }
+        },
+        "/v3.0/asrm/highRiskDevices": {
+            "get": {
+                "tags": [
+                    "ASRM"
+                ],
+                "operationId": "ListHighRiskDevices",
+                "summary": "Get at‑risk devices (paginated)",
+                "description": "Displays information about at‑risk devices that match specified criteria in a paginated list.",
+                "parameters": [
+                    {
+                        "name": "TMV1-Filter",
+                        "in": "header",
+                        "description": "Filter for retrieving a subset of the at‑risk devices list. Supported fields include id, deviceName, ip, os, riskScore, lastLogonUser. Supported operators include eq, and, or, not, parentheses, gt, ge, le, lt.",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 1024
+                        },
+                        "example": "deviceName eq 'SASE-PC1'"
+                    },
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "description": "Sort field and order. Append 'asc' or 'desc'. Default: riskScore desc",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128
+                        },
+                        "example": "riskScore desc"
+                    },
+                    {
+                        "name": "top",
+                        "in": "query",
+                        "description": "Number of records per page. Default 100.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                10,
+                                50,
+                                100,
+                                200,
+                                1000
+                            ],
+                            "default": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "items",
+                                        "count",
+                                        "totalCount"
+                                    ],
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DeviceRiskItem"
+                                            }
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "description": "Number of items in this page"
+                                        },
+                                        "totalCount": {
+                                            "type": "integer",
+                                            "description": "Total number of items across all pages"
+                                        },
+                                        "nextLink": {
+                                            "type": "string",
+                                            "description": "URL to retrieve the next page of results",
+                                            "example": "https://api.xdr.trendmicro.com/v3.0/asrm/highRiskDevices?skipToken=skipToken"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "BadRequest",
+                                        "message": "Unable to retrieve at‑risk device information. Verify that the request is properly formatted and try again.",
+                                        "innererror": {
+                                            "code": "RiskDevices_000400",
+                                            "message": "TraceId: 00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "description": "Access denied",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "AccessDenied",
+                                        "message": "Access denied.",
+                                        "innererror": {
+                                            "code": "AccessDeny_000403",
+                                            "message": "TraceId: 00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InternalServerError",
+                                        "message": "Unable to retrieve at‑risk device information. An internal error has occurred.",
+                                        "innererror": {
+                                            "code": "RiskDevices_000500",
+                                            "message": "TraceId: 00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "UpdateAlertStatusRequest": {
-        "type": "object",
-        "required": ["status"],
-        "properties": {
-          "status": {
-            "type": "string",
-            "description": "New status for the alert (for example: Open, InProgress, Resolved)"
-          },
-          "investigationResult": {
-            "type": "string",
-            "description": "Plain-text summary of investigation result"
-          }
-        },
-        "additionalProperties": false
-      },
-      "AddNoteRequest": {
-        "type": "object",
-        "required": ["content"],
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "Note text"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DeviceRiskItem": {
-        "type": "object",
-        "required": ["id", "deviceName", "os", "riskScore", "lastLogonUser", "ip"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Device ID on Trend Vision One",
-            "example": "9c94bd33-c589-48c4-9431-dace397b0067"
-          },
-          "deviceName": { "type": "string", "description": "Device name", "example": "SASE-PC1" },
-          "os": {
-            "type": "string",
-            "description": "Operating system of the device",
-            "example": "Windows Server 2016 Standard (64 bit) build 14393 10.0.14393"
-          },
-          "riskScore": { "type": "number", "description": "Risk score of the device", "example": 84 },
-          "lastLogonUser": { "type": "string", "description": "Last signed-in user", "example": "Administrator" },
-          "ip": {
-            "type": "array",
-            "description": "IP addresses of the device",
-            "items": { "type": "string" },
-            "example": ["10.204.167.113"]
-          }
-        },
-        "additionalProperties": true
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "required": ["error"],
-        "properties": {
-          "error": {
-            "type": "object",
-            "required": ["code", "message"],
-            "properties": {
-              "code": { "type": "string" },
-              "message": { "type": "string" },
-              "innererror": {
+    },
+    "components": {
+        "schemas": {
+            "UpdateAlertStatusRequest": {
                 "type": "object",
+                "required": [
+                    "status"
+                ],
                 "properties": {
-                  "code": { "type": "string" },
-                  "message": { "type": "string" }
+                    "status": {
+                        "type": "string",
+                        "description": "New status for the alert (for example: Open, InProgress, Resolved)"
+                    },
+                    "investigationResult": {
+                        "type": "string",
+                        "description": "Plain-text summary of investigation result"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddNoteRequest": {
+                "type": "object",
+                "required": [
+                    "content"
+                ],
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "description": "Note text"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DeviceRiskItem": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "deviceName",
+                    "os",
+                    "riskScore",
+                    "lastLogonUser",
+                    "ip"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Device ID on Trend Vision One",
+                        "example": "9c94bd33-c589-48c4-9431-dace397b0067"
+                    },
+                    "deviceName": {
+                        "type": "string",
+                        "description": "Device name",
+                        "example": "SASE-PC1"
+                    },
+                    "os": {
+                        "type": "string",
+                        "description": "Operating system of the device",
+                        "example": "Windows Server 2016 Standard (64 bit) build 14393 10.0.14393"
+                    },
+                    "riskScore": {
+                        "type": "number",
+                        "description": "Risk score of the device",
+                        "example": 84
+                    },
+                    "lastLogonUser": {
+                        "type": "string",
+                        "description": "Last signed-in user",
+                        "example": "Administrator"
+                    },
+                    "ip": {
+                        "type": "array",
+                        "description": "IP addresses of the device",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "10.204.167.113"
+                        ]
+                    }
                 },
                 "additionalProperties": true
-              }
             },
-            "additionalProperties": true
-          }
+            "ErrorResponse": {
+                "type": "object",
+                "required": [
+                    "error"
+                ],
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "innererror": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    }
+                                },
+                                "additionalProperties": true
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                },
+                "additionalProperties": false
+            }
         },
-        "additionalProperties": false
-      }
-    },
-    "responses": {
-      "Unauthorized": {
-        "description": "Unauthorized",
-        "content": {
-          "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-          }
+        "responses": {
+            "Unauthorized": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "Forbidden": {
+                "description": "Forbidden",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Supply your Trend Vision One API token as a Bearer token."
+            }
         }
-      },
-      "Forbidden": {
-        "description": "Forbidden",
-        "content": {
-          "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "Supply your Trend Vision One API token as a Bearer token."
-      }
     }
-  }
 }
