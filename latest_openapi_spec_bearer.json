@@ -1,0 +1,486 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mimecast Threat Intelligence & Security Stats API",
+    "version": "1.0.1",
+    "description": "API specification for Mimecast Threat Intelligence and Security Statistics endpoints. Uses HTTP Bearer authentication."
+  },
+  "servers": [
+    {
+      "url": "https://api.mimecast.com"
+    }
+  ],
+  "paths": {
+    "/threats/v1/stats/gateway-detections": {
+      "get": {
+        "operationId": "getGatewayDetections",
+        "summary": "Get Gateway Detection Stats",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spam",
+                "malware"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detection stats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DetectionStat"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/threats/v1/stats/url-clicks": {
+      "get": {
+        "operationId": "getUrlClickStats",
+        "summary": "Get Malicious URL Click Stats",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "URL click stats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DetectionStat"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/threats/v1/stats/attachment-scans": {
+      "get": {
+        "operationId": "getAttachmentScanStats",
+        "summary": "Get Attachment Scan Stats",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attachment scan stats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DetectionStat"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/threats/v1/stats/impersonations": {
+      "get": {
+        "operationId": "getImpersonationStats",
+        "summary": "Get Impersonation Detection Stats",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Impersonation stats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DetectionStat"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/threats/v1/stats/phishing": {
+      "get": {
+        "operationId": "getPhishingStats",
+        "summary": "Get Phishing Detection Stats",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phishing stats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DetectionStat"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/threats/v1/stats/threats-by-sender": {
+      "get": {
+        "operationId": "getThreatsBySender",
+        "summary": "Get Threats by Sender",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "pageToken",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Threats by sender retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreatsByEntityResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/threats/v1/stats/threats-by-recipient": {
+      "get": {
+        "operationId": "getThreatsByRecipient",
+        "summary": "Get Threats by Recipient",
+        "parameters": [
+          {
+            "name": "timestampRangeStartsAt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "timestampRangeEndsAt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "pageToken",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Threats by recipient retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreatsByEntityResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "DetectionStat": {
+        "type": "object",
+        "properties": {
+          "startTimestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "detectionCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "startTimestamp",
+          "detectionCount"
+        ]
+      },
+      "ThreatCounts": {
+        "type": "object",
+        "properties": {
+          "spam": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "malware": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "phishing": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "suspicious": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unwanted": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "total"
+        ]
+      },
+      "ThreatsByEntity": {
+        "type": "object",
+        "properties": {
+          "entity": {
+            "type": "string",
+            "description": "Sender or recipient email address"
+          },
+          "status": {
+            "type": "string"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ThreatCounts"
+          }
+        },
+        "required": [
+          "entity",
+          "counts"
+        ]
+      },
+      "ThreatsByEntityResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ThreatsByEntity"
+            }
+          },
+          "nextPageToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
+}
