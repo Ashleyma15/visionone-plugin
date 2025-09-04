@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: Mimecast Threat Intelligence and Alerting API
+  description: API for accessing Mimecast threat intelligence feeds and alert logs
+  version: "1.0.0"
+servers:
+  - url: https://api.mimecast.com
+paths:
+  /api/ttp/threat-intel/get-feed:
+    post:
+      summary: Get Threat Intelligence Feed
+      operationId: getThreatIntel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreatIntelRequest'
+      responses:
+        '200':
+          description: Threat feed data
+  /api/ttp/url-protect/logs:
+    post:
+      summary: Get URL Protect Logs
+      operationId: getUrlProtectLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogRequest'
+      responses:
+        '200':
+          description: URL Protect log data
+  /api/ttp/impersonation-protect/logs:
+    post:
+      summary: Get Impersonation Protect Logs
+      operationId: getImpersonationLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogRequest'
+      responses:
+        '200':
+          description: Impersonation Protect log data
+  /api/ttp/attachment-protect/logs:
+    post:
+      summary: Get Attachment Protect Logs
+      operationId: getAttachmentLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogRequest'
+      responses:
+        '200':
+          description: Attachment Protect log data
+  /api/ttp/dlp/logs:
+    post:
+      summary: Get DLP Logs
+      operationId: getDlpLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogRequest'
+      responses:
+        '200':
+          description: DLP log data
+  /api/audit/get-audit-events:
+    post:
+      summary: Get Audit Events
+      operationId: getAuditEvents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogRequest'
+      responses:
+        '200':
+          description: Audit event data
+  /api/archive/search:
+    post:
+      summary: Search Archive
+      operationId: searchArchive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArchiveSearchRequest'
+      responses:
+        '200':
+          description: Archive search results
+components:
+  schemas:
+    ThreatIntelRequest:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        fileType:
+          type: string
+          enum: [csv, stix]
+        feedType:
+          type: string
+          enum: [malware, phishing, impersonation]
+    LogRequest:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        limit:
+          type: integer
+          default: 100
+    ArchiveSearchRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        limit:
+          type: integer
